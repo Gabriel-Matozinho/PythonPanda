@@ -1,0 +1,184 @@
+Trabalhando com planilhas Excel no Pandas:
+
+
+#Importando a biblioteca
+
+Import pandas as pd
+
+#Leitura dos arquivos. Vão ser usada as variáveis: df1, df2, df3, df4, df5. Dentro dos () do pd.read_excel, será colocado o nome da planilha que irá sofrer o upload.
+df1 = pd.read_excel(“Aracaju.xlsx”)
+df2 = pd.read_excel(“Fortaleza.xlsx”)
+df3 = pd.read_excel(“Natal.xlsx”)
+df4 = pd.read_excel(“Recife.xlsx”)
+df5 = pd.read_execel(“Salvador.xlsx”)
+
+
+#Juntado/concatenando todos os arquivos. Função .concat
+df = pd.concat ([df1,df2,df3,df4,df5])
+
+#Exibindo s 5 primeiras linhas. Função .head.
+df.head()
+
+#Exibindo as 5 últimas linhas. Função .tail
+df.tail()
+
+#Verificando o tipo dado de cada coluna. Função .types
+df.types()
+
+#Alterando o tipo de dado da coluna LojaID
+df[“LojaID”] = df[“LojaID”].astype(“object”)
+
+#Pegando amostras do nosso conjunto de dados
+df.sample()  # dentro dos() se coloca a quantidade de linhas de amostras
+
+ 
+Tratando valores faltantes
+
+#Consultando linhas com valores faltantes
+df.isnull().sum()
+ # Essas funções irão somar a quantidade de valores faltantes, no caso do conjunto de dados, irá aparecer apenas na coluna Vendas
+
+#Substituindo os calores nulos pela média
+df[“Vendas”].fillna(df[“Vendas”].eman(), inplace=True)
+
+#Substituindo os valores nulos por zero
+df[“Vendas”].fillna(0, inplace=True)
+
+#Apagando as linhas com valores nulos
+df.dropna(inplace=True)
+
+#Apagando as linhas com valores nulos com base apenas em 1 coluna
+df.dropna(Subset=[“Vendas”], inplace = True)
+
+#Removendo linhas que estejam com valores faltantes em todas as colunas
+df.dropna(how= “all”, inplace =True)
+
+
+Criando colunas novas
+ 
+#Criando a colina de receita
+df[“Receita”] = df[“Vendas”].mul(df[“Qtde”])
+
+#Retornando a maior receita
+df[“Receita”].max()
+#Retornando a menor receita
+df[“Receita”].min()
+
+#O uso da Função nlargest, quando se passa a os parâmetros, quantidades (0,....9999999) e a coluna, irá mostrar os maiores.
+df.nlargest(3, “Receita”)
+
+#O uso da Função nsmallest, quando se passa os parâmetros, quantidades (0,....9999999) e a coluna, irá mostrar os menores.
+df.nsmallest(3, “Receita”)
+
+#Agrupando por cidade
+df.groupby(“Cidade”)[“Receita”].sum()
+
+#Ordenando o conjunto de dados
+df.sort_values(“Receita”, ascending=False).head(10)
+##Nesse caso o código irá retornar as 10 primeiras linhas da coluna receita em ordem das maiores receitas.
+
+
+
+Trabalhando com datas
+
+#Transformando a coluna de data em tipo inteiro
+df[“Data”] = df[“data”].astype(“int64”)
+
+#Verificando o tipo de dado de cada coluna
+df.dtypes
+
+#Transformando a coluna de data para o formato datetime
+df[“Data”] = pd.to_datatime(df[“Data”])
+
+#Agrupamento por ano
+df.groupby(df[“Data”].dt.year)[“Receita”].sum()
+
+#Criando um nova coluna com o ano
+df[“Ano_Venda”] = df[“Data”].dt.year
+
+#Extraindo o mês e o dia.
+df[“mês_venda”], df[“dia_venda”] = (df[“Data”].dt.month, df [‘Data”].dt.day)
+
+#Retornando a data mais antiga
+df[“Data”].min()
+
+#Retornando a data mais nova
+df[“Data”].max()
+
+#Calculando a diferença de dias ## No caso em tela irá tirar a diferença da coluna data e da data mínima, gerando a diferença em dias.
+Df[“diferença_dias”] = df [“Data”] – df [“Data”].min()
+
+#Criando a coluna de trimestre
+df[“trimestre_venda”] = df[“Data”].dt.quarter
+
+#Filtrando as vendas de 2019 do mês de março
+vendas_marco_19 = df.loc[df[“Data”].dt.year == 2019 & (df[“Data”].dt.month == 3)] 
+
+ 
+Visualização de dados através de gráficos
+
+df[“LojaID”].value_counts(ascending=False) ##Irá trazer  dos dados  do maior para o menor
+
+#Gráfico de barras, se usa o .plot.bar()
+df[“LojaID”].value_counts(ascending=False).plot.bar()
+
+#Gráfico de barras horizontais, se usa o plot.barh()
+df[“LojaID”].value_counts().plot.barh()
+
+#Gráfico de barras horizontais do menor para o maior
+df[“LojaID”].value_counts(ascending=True).plot.barh()
+
+#Retirando a linha acima do gráfico, usando o “;”.
+df[“LojaID”].value_counts(ascending=True).plot.barh();
+
+#Gráfico de Pizza/Torta
+df.groupby(df[“Data”].dt.year)[“Receita”].sum().plot.pie()
+
+#Tota de vendas por cidade
+df[“Cidade”].value_counts()
+
+#Adicionando título e  alterando o nome dos eixos
+import matplotlib.pyplot as plt
+df[“Cidade”].value_counts().plot.bar(title= “Total vendas por Cidade”) 
+plt.xlabel(“Cidade”)
+plt.ylabel(“Total Vendas”);
+
+#Alterando a cor
+df["Cidade"].value_counts().plot.bar("Total vendas por Cidade", "color = red")
+plt.xlabel("Cidade")
+plt.ylabel("Total Vendas");
+
+#Alterando o estilo
+plt.style.use(“ggplot”)
+
+#O plot irá passar o gráfico de linhas 
+df.groupby(df[“mês_venda”])[“Qtde”].sum().plot(title = “Total Produtos Vendidos x Mês”)
+plt.xlabel(“Mês”)
+plt.ylabel(“Total Produtos Vendidos”)
+plt.legend() ;
+
+#Mês e quantidade de produtos vendidos por mês.
+df.groupby(df[“mês_venda”])[“Qtde”].sum()
+
+#Selecionando apenas as vendas de 2019
+df_2019 = df(df[“Ano_Venda”] == 2019)
+
+#Total produtos vendidos por mês
+df_2019.groupby()df_2019[“Mês_vendas”]) [“Qtde”].sum().plot(marker = “v”)
+plt.xlabel(“Mês”)
+plt.ylabe(“Total Produtos Vendidos”)
+plt.legend();
+
+#Histograma
+plt.hist(df[“Qtde”], color=”magenta”); 
+
+#Gráfico de dispersão
+plt.scatter(x=df_2019[“dia_venda”], y = df_2019[“Receita”]);
+
+#Salvando em png
+df_2019.groupby(df_2019[“mês_venda”])[“Qtde”].sum().plot(marker = “v”)
+plt.title(“Quantidade de produtos vendidos x mês”)
+plt.xlabel(“Mês”)
+plt.ylabel(“Total Produto Vendidos”)
+plt.legend()
+plt.savefig(gráfico Wtde x MÊS.png”)  
