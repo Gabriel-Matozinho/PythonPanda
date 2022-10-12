@@ -1,0 +1,63 @@
+#Importando a biblioteca pandas
+
+Import pandas as (colocar uma variável ex: ‘pd’)
+
+
+#Colocando o dataset dentro da variável e abrindo o arquivo csv com o comando. read
+
+df = pd.read_csv(“colar o caminho do arquivo aqui”, ## Caso tenha erro nas linhas do arquivo usar a virgula após o caminho do arquivo e  a função error_bad_lines=False)
+  
+#Visualizando as 5 primeiras linhas, caso queira ver mais linhas é apenas colocar a quantidade dentro do ().
+
+df.head() 
+
+#Por definição o Pandas lê os separadores com a Vírgula, porém se estiver outro separador no arquivo basta reconhecer qual é e usar o sep=”aqui vai o separador”
+
+Ex: df = pd.read_csv(“/contente/drive/ My Drive/Datasets/Gapminder.csv”, error_bad_lines=False, sep = “;”)    # Aqui no caso o separador era um ponto e vírgula.
+ 
+#Renomear as colunas
+
+df.rename(columns={“country”: ”Pais”, “contine”: “Continente”, “year” : “Ano”, “lifeExp”: “Expectativa de Vida”, “pop”: “População Total”, “gpfPerCap”: “PIB” }) #O parâmetro pede que seja feito em um dicionário, passando na estrutura o nome que está  no arquivo depois dois pontos : o nome que irá substituir nas colunas.
+
+#Total de Linhas e colunas do arquivo .shape
+
+df.shape
+ 
+#Apenas o nomes das colunas
+
+df.columns
+
+#Retornas os tipos dos dados de cada coluna dentro do arquivo: Object, int64, float64,datatime.
+
+df.dtypes 
+
+#Mostrando as últimas 5 linhas do arquivo, caso queira ver mais linhas é apenas colocar a quantidade dentro do ().
+
+df.tail()
+#Usando a função .describe() irá retornar dados estatísticos do conjunto de dados, como a quantidade, a média, o máximo, mínimo, os quartis.
+
+df.describe()
+
+#Como filtrar os dados
+df[“continentes’].unique() 
+## Aqui irá aparecer todos os continentes dentro do conjunto de dados, vamos usar o continente Oceania para exemplificar mais funções.
+
+#Isolar apenas uma coluna
+Oceania = df.loc[df[“continente’] == “Oceania”]
+
+#Vai mostrar os 5 primeiras linhas do continente Oceania.
+Oceania.head ()
+
+
+#Agrupamento de dados
+##agrupar por continente, e saber quantos países tem em cada continente.
+
+df.groupby(“continente”)[‘Pais”].nunique ()			
+#a função .nunique ()  faz essa contagem distinta 
+
+
+# Como saber a expectativa média de vida para cada ano do conjunto de dados
+df.groupby(“Ano”)[“Expectativa de Vida”].mean()
+
+ # Saber a soma dos valores do PIB, usando o função .sum().
+df[“PIB”]. sum
